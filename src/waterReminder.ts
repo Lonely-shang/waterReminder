@@ -1,7 +1,7 @@
 /*
  * @Author: Miliky
  * @Date: 2022-04-30 17:49:53
- * @LastEditTime: 2022-04-30 18:52:26
+ * @LastEditTime: 2022-04-30 19:28:05
  * @LastEditors: Eliauk
  * @Description: Water Reminder
  * @FilePath: /waterReminder/src/waterReminder.ts
@@ -39,6 +39,13 @@ class WaterReminder {
 
     // 保存当前配置, 更新配置列表
     this.config = config;
+
+    // 关闭插件调用卸载方法
+    if(!config.enabled) {
+      this.uninstall();
+    }
+
+    // 进行相关设置
   }
 
   // 插件卸载时触发
