@@ -1,7 +1,7 @@
 /*
  * @Author: Miliky
  * @Date: 2022-04-30 17:49:53
- * @LastEditTime: 2022-04-30 19:28:05
+ * @LastEditTime: 2022-05-01 17:58:19
  * @LastEditors: Eliauk
  * @Description: Water Reminder
  * @FilePath: /waterReminder/src/waterReminder.ts
@@ -9,7 +9,9 @@
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import { isChanged } from './shared/tools';
+import { vscodePath } from './shared/vscodePath';
 
 const config = {
   remindTime: 1000,
@@ -21,17 +23,19 @@ class WaterReminder {
   private timmer: NodeJS.Timeout | undefined;
   private date: string | undefined;
   private config: vscode.WorkspaceConfiguration;
+  private _rawCss: string = '';
 
   constructor() {
     // 获取相关配置
     this.config = vscode.workspace.getConfiguration('waterReminder');
   }
 
-  private init() {
+  private init() {    
+    this.getCssForCode();
+
     const lastConfig = this.config;
     const config = vscode.workspace.getConfiguration('waterReminder');
 
-    //
     if (isChanged(lastConfig, config)) { return; }
 
     // 两次配置均未启动插件
@@ -46,6 +50,8 @@ class WaterReminder {
     }
 
     // 进行相关设置
+
+
   }
 
   // 插件卸载时触发
@@ -59,9 +65,9 @@ class WaterReminder {
     }, 2000);
   }
 
-  showMassage () {
+  private showMassage () {
     const that = this;
-    vscode.window.showInformationMessage("健康小贴士: 停下休息一会，补充一点水！",'OK')
+    vscode.window.showInformationMessage("健康小贴士: 双手离开键盘休息一会，补充一点水！",'OK')
     .then(function(select){
       if (select === 'OK') {
         clearTimeout(that.timmer as NodeJS.Timeout);
@@ -70,6 +76,17 @@ class WaterReminder {
       }
       that.showMassage();
     });
+  }
+
+  private getCssForCode (): string {
+    this._rawCss = fs.readFileSync(vscodePath.cssPath, 'utf-8');
+    return this._rawCss;
+  }
+
+  private setCssToCode (content: string): void {
+    if (!!content) {
+        fs.writeFileSync(vscodePath.cssPath, content, 'utf-8');
+    }
   }
 
   public watch(): vscode.Disposable {

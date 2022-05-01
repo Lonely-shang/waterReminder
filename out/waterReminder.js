@@ -2,7 +2,7 @@
 /*
  * @Author: Miliky
  * @Date: 2022-04-30 17:49:53
- * @LastEditTime: 2022-04-30 19:28:05
+ * @LastEditTime: 2022-05-01 17:58:19
  * @LastEditors: Eliauk
  * @Description: Water Reminder
  * @FilePath: /waterReminder/src/waterReminder.ts
@@ -11,20 +11,23 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.waterReminder = void 0;
 const vscode = require("vscode");
+const fs = require("fs");
 const tools_1 = require("./shared/tools");
+const vscodePath_1 = require("./shared/vscodePath");
 const config = {
     remindTime: 1000,
     totalWater: "2000ml"
 };
 class WaterReminder {
     constructor() {
+        this._rawCss = '';
         // 获取相关配置
         this.config = vscode.workspace.getConfiguration('waterReminder');
     }
     init() {
+        this.getCssForCode();
         const lastConfig = this.config;
         const config = vscode.workspace.getConfiguration('waterReminder');
-        //
         if ((0, tools_1.isChanged)(lastConfig, config)) {
             return;
         }
@@ -50,7 +53,7 @@ class WaterReminder {
     }
     showMassage() {
         const that = this;
-        vscode.window.showInformationMessage("健康小贴士: 停下休息一会，补充一点水！", 'OK')
+        vscode.window.showInformationMessage("健康小贴士: 双手离开键盘休息一会，补充一点水！", 'OK')
             .then(function (select) {
             if (select === 'OK') {
                 clearTimeout(that.timmer);
@@ -59,6 +62,15 @@ class WaterReminder {
             }
             that.showMassage();
         });
+    }
+    getCssForCode() {
+        this._rawCss = fs.readFileSync(vscodePath_1.vscodePath.cssPath, 'utf-8');
+        return this._rawCss;
+    }
+    setCssToCode(content) {
+        if (!!content) {
+            fs.writeFileSync(vscodePath_1.vscodePath.cssPath, content, 'utf-8');
+        }
     }
     watch() {
         this.init();
