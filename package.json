@@ -6,6 +6,7 @@
 	"engines": {
 		"vscode": "^1.66.0"
 	},
+	"icon": "vscode-waterReminder-logo.png",
 	"categories": [
 		"Other"
 	],
